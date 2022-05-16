@@ -1,0 +1,54 @@
+syntax = "proto3";
+package registry;
+
+enum NodeState {
+    NODE_UP = 0;
+    NODE_DOWN = 1;
+}
+
+enum Action {
+    SAVE = 0;
+    UPDATE = 1;
+    DELETE = 2;
+    GET = 3;
+    BROADCAST = 4;
+}
+
+message NodeDescription {
+    string data_center = 1;
+    string service = 2;
+    string nid = 3;
+    string event_topic = 4;
+    map<string, string> extra_info = 5;
+}
+
+message Request {
+    Action action = 1;
+    NodeDescription node = 2;
+    string service = 3;
+    map<string, string> params = 4;
+    bytes raw_data = 5; 
+}
+
+message Response {
+    bool success = 1;
+    string reason = 2;
+}
+
+message NodeItem {
+	string subj = 1;
+	uint64 expire = 2;
+	NodeDescription description = 3;
+}
+
+message Nodes {
+    repeated NodeDescription nodes_item = 1; 
+}
+
+message DiscoveryMessage {
+    oneof union {
+        Request request = 1;
+        Response response = 2;
+        Nodes nodes = 3;
+    }
+}
